@@ -257,7 +257,7 @@ public class HttpRequest {
                     //form 参数（不含file）
                     List<NameValuePair> list = new ArrayList<>();
                     for (String key : this.form.keySet()) {
-                        list.add(new BasicNameValuePair(key, (String) form.get(key)));
+                        list.add(new BasicNameValuePair(key, String.valueOf(form.get(key))));
                     }
                     request.setEntity(new UrlEncodedFormEntity(list));
                 }else{
@@ -266,6 +266,9 @@ public class HttpRequest {
                     String contentType = this.headers.get("Content-Type");
                     if (Objects.isNull(contentType)||contentType.isEmpty()){
                         this.headers.put("Content-Type", "application/json");
+                    }
+                    if (null == body){
+                        body="";
                     }
                     request.setEntity(new StringEntity(body));
                 }
