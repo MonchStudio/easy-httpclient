@@ -75,19 +75,12 @@ public class HttpRequest {
         this.headers.put("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36");
     }
 
-    /**
-     * 方法说明: 创建
-     * @author xqlee
-     */
     protected static HttpRequest create(String url){
         return new HttpRequest(url);
     }
 
 
-    /**
-     * 方法说明: 设置请求头部参数
-     * @author xqlee
-     */
+
     public HttpRequest header(String name,String value){
         if (null!=name&&null!=value){
             this.headers.put(name,value);
@@ -95,10 +88,7 @@ public class HttpRequest {
         return this;
     }
 
-    /**
-     * 方法说明: cookie设置
-     * @author xqlee
-     */
+
     public HttpRequest cookie(String name,String value){
         BasicClientCookie cookie = new BasicClientCookie(name, value);
         cookie.setDomain(cookieDomain());
@@ -107,10 +97,7 @@ public class HttpRequest {
         return this;
     }
 
-    /**
-     * 方法说明: cookie设置
-     * @author xqlee
-     */
+
     public HttpRequest cookie(BasicClientCookie cookie){
         this.cookieStore.addCookie(cookie);
         return this;
@@ -133,10 +120,7 @@ public class HttpRequest {
         return "localhost";
     }
 
-    /**
-     * 方法说明: 超时设置，默认60s
-     * @author xqlee
-     */
+
     public HttpRequest timeout(int seconds){
         this.MAX_SOCKET_TIMEOUT=seconds*1000;
         this.MAX_CONNECTION_TIMEOUT=seconds*1000;
@@ -150,10 +134,7 @@ public class HttpRequest {
         }
         return this;
     }
-    /**
-     * 方法说明: 设置表单参数
-     * @author xqlee
-     */
+
     public HttpRequest form(String name,Object value){
         this.body=null;
         if (value instanceof Serializable){
@@ -163,10 +144,7 @@ public class HttpRequest {
         }
     }
 
-    /**
-     * 方法说明: form map参数
-     * @author xqlee
-     */
+
     public HttpRequest formMap(Map<String,Object> map){
         if (Objects.nonNull(map)){
             for (String key : map.keySet()) {
@@ -176,10 +154,7 @@ public class HttpRequest {
         return this;
     }
 
-    /**
-     * 方法说明: form map参数
-     * @author xqlee
-     */
+
     public HttpRequest formMapStr(Map<String,String> map){
         if (Objects.nonNull(map)){
             for (String key : map.keySet()) {
@@ -189,10 +164,7 @@ public class HttpRequest {
         return this;
     }
 
-    /**
-     * 方法说明: body参数（post等方法适用）
-     * @author xqlee
-     */
+
     public HttpRequest body(String body){
         if (null!=body){
             this.form=null;
@@ -202,19 +174,13 @@ public class HttpRequest {
     }
 
 
-    /**
-     * 方法说明: 请求方法
-     * @author xqlee
-     */
+
     public HttpRequest method(HttpMethod httpMethod){
         this.httpMethod = httpMethod;
         return this;
     }
 
-    /**
-     * 方法说明: 添加form参数
-     * @author xqlee
-     */
+
     private HttpRequest putToForm(String name,Object value){
         if (null != name && null != value){
             if (null == this.form){

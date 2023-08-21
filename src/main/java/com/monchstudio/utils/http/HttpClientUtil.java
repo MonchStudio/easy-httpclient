@@ -4,63 +4,71 @@ public class HttpClientUtil {
 
 
     /**
-     * 方法说明: POST请求
-     * @author xqlee
+     * POST请求
+     * @param url api地址
+     * @return 执行结果
      */
     public static HttpRequest post(String url){
         return HttpRequest.create(url).method(HttpRequest.HttpMethod.POST);
     }
 
     /**
-     * 方法说明: GET 请求
-     * @author xqlee
+     * get请求
+     * @param url api地址
+     * @return 执行结果
      */
     public static HttpRequest get(String url){
         return HttpRequest.create(url).method(HttpRequest.HttpMethod.GET);
     }
 
     /**
-     * 方法说明: PUT 请求
-     * @author xqlee
+     * put 请求
+     * @param url api地址
+     * @return 执行结果
      */
     public static HttpRequest put(String url){
         return HttpRequest.create(url).method(HttpRequest.HttpMethod.PUT);
     }
 
     /**
-     * 方法说明: PATCH 请求
-     * @author xqlee
+     * patch 请求
+     * @param url api地址
+     * @return 执行结果
      */
     public static HttpRequest patch(String url){
         return HttpRequest.create(url).method(HttpRequest.HttpMethod.PATCH);
     }
 
     /**
-     * 方法说明: HEAD 请求
-     * @author xqlee
+     * head 请求
+     * @param url api地址
+     * @return 执行结果
      */
     public static HttpRequest head(String url){
         return HttpRequest.create(url).method(HttpRequest.HttpMethod.HEAD);
     }
 
     /**
-     * 方法说明: DELETE 请求
-     * @author xqlee
+     * delete 请求
+     * @param url api地址
+     * @return 执行结果
      */
     public static HttpRequest delete(String url){
         return HttpRequest.create(url).method(HttpRequest.HttpMethod.DELETE);
     }
     /**
-     * 方法说明: OPTIONS 请求
-     * @author xqlee
+     * options 请求
+     * @param url api地址
+     * @return 执行结果
      */
     public static HttpRequest options(String url){
         return HttpRequest.create(url).method(HttpRequest.HttpMethod.OPTIONS);
     }
 
     /**
-     * 方法说明: TRACE 请求
-     * @author xqlee
+     * trace 请求
+     * @param url api地址
+     * @return 执行结果
      */
     public static HttpRequest trace(String url){
         return HttpRequest.create(url).method(HttpRequest.HttpMethod.TRACE);
