@@ -9,6 +9,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
@@ -23,7 +24,15 @@ import java.util.regex.Pattern;
 
 
 public class HttpRequest {
+    protected static PoolingHttpClientConnectionManager poolingHttpClientConnectionManager;
 
+    static {
+        poolingHttpClientConnectionManager=new PoolingHttpClientConnectionManager();
+        //每个路由的最大并发数连接
+        poolingHttpClientConnectionManager.setDefaultMaxPerRoute(10);
+        //总连接数
+        poolingHttpClientConnectionManager.setMaxTotal(30);
+    }
     private  int MAX_SOCKET_TIMEOUT = 60000;
     private  int MAX_CONNECTION_TIMEOUT = 60000;
 
@@ -223,7 +232,9 @@ public class HttpRequest {
         if (Objects.nonNull(customConfig)){
             config=customConfig;
         }
-        try (CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(this.cookieStore)
+        try (CloseableHttpClient httpclient = HttpClients.custom()
+                .setConnectionManager(poolingHttpClientConnectionManager)
+                .setDefaultCookieStore(this.cookieStore)
                 .setDefaultRequestConfig(config)
                 .build()){
             HttpEntityEnclosingRequestBase request = new HttpEntityEnclosingRequestBase() {

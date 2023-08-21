@@ -1,7 +1,8 @@
 package com.monchstudio.utils.http;
 
-public class HttpClientUtil {
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 
+public class HttpClientUtil {
 
     /**
      * POST请求
@@ -74,5 +75,21 @@ public class HttpClientUtil {
         return HttpRequest.create(url).method(HttpRequest.HttpMethod.TRACE);
     }
 
+
+    /**
+     * 连接池管理
+     * @param max 总共最大链接数量
+     */
+    public static void poolMaxTotal(int max){
+        HttpRequest.poolingHttpClientConnectionManager.setMaxTotal(max);
+    }
+
+    /**
+     * 连接池管理
+     * @param max 并发数量
+     */
+    public static void poolDefaultMaxPerRoute(int max){
+        HttpRequest.poolingHttpClientConnectionManager.setDefaultMaxPerRoute(max);
+    }
 
 }
