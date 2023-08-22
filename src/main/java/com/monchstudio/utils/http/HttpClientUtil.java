@@ -77,19 +77,12 @@ public class HttpClientUtil {
 
 
     /**
-     * 连接池管理
-     * @param max 总共最大链接数量
+     * 连接池管理 数量
+     * @param maxPerRoute 每个路由的最大并发数连接
+     * @param maxTotal 总连接数
      */
-    public static void poolMaxTotal(int max){
-        HttpRequest.poolingHttpClientConnectionManager.setMaxTotal(max);
-    }
-
-    /**
-     * 连接池管理
-     * @param max 并发数量
-     */
-    public static void poolDefaultMaxPerRoute(int max){
-        HttpRequest.poolingHttpClientConnectionManager.setDefaultMaxPerRoute(max);
+    public static void poolConnect(int maxPerRoute,int maxTotal){
+        HttpRequest.connect(maxPerRoute,maxTotal);
     }
 
 }

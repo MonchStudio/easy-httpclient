@@ -15,7 +15,9 @@ public class HttpClientTests {
 
     public static void main(String[] args) {
         try {
-            get();
+            for (int i = 0; i < 20; i++) {
+                get();
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -34,4 +36,5 @@ public class HttpClientTests {
             System.out.println("header :"+firstHeader.getValue());
         }
     }
+
 }

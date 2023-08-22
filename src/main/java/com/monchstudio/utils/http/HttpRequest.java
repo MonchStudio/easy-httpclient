@@ -5,6 +5,7 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -25,6 +26,7 @@ import java.util.regex.Pattern;
 
 public class HttpRequest {
     protected static PoolingHttpClientConnectionManager poolingHttpClientConnectionManager;
+    private static CloseableHttpClient httpClient;
 
     static {
         poolingHttpClientConnectionManager=new PoolingHttpClientConnectionManager();
@@ -32,7 +34,15 @@ public class HttpRequest {
         poolingHttpClientConnectionManager.setDefaultMaxPerRoute(10);
         //总连接数
         poolingHttpClientConnectionManager.setMaxTotal(30);
+
+        httpClient=HttpClients.custom()
+                .setConnectionManager(poolingHttpClientConnectionManager)
+                .build();
     }
+
+
+
+
     private  int MAX_SOCKET_TIMEOUT = 60000;
     private  int MAX_CONNECTION_TIMEOUT = 60000;
 
@@ -82,6 +92,8 @@ public class HttpRequest {
         this.headers.put("Accept-Encoding","gzip, deflate");
         this.headers.put("Accept-Language","zh-CN,zh;q=0.8");
         this.headers.put("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36");
+
+
     }
 
     protected static HttpRequest create(String url){
@@ -134,6 +146,15 @@ public class HttpRequest {
         this.MAX_SOCKET_TIMEOUT=seconds*1000;
         this.MAX_CONNECTION_TIMEOUT=seconds*1000;
         return this;
+    }
+
+
+    protected static void connect(int maxPerRoute,int maxTotal){
+         poolingHttpClientConnectionManager.setDefaultMaxPerRoute(maxPerRoute);
+         poolingHttpClientConnectionManager.setMaxTotal(maxTotal);
+         httpClient=HttpClients.custom()
+                .setConnectionManager(poolingHttpClientConnectionManager)
+                .build();
     }
 
 
@@ -232,61 +253,59 @@ public class HttpRequest {
         if (Objects.nonNull(customConfig)){
             config=customConfig;
         }
-        try (CloseableHttpClient httpclient = HttpClients.custom()
-                .setConnectionManager(poolingHttpClientConnectionManager)
-                .setDefaultCookieStore(this.cookieStore)
-                .setDefaultRequestConfig(config)
-                .build()){
-            HttpEntityEnclosingRequestBase request = new HttpEntityEnclosingRequestBase() {
-                @Override
-                public String getMethod() {
-                    return method;
-                }
-            };
-            //头部处理
-            if (Objects.nonNull(this.headers)){
-                for (String key : this.headers.keySet()) {
-                    request.addHeader(key,this.headers.get(key));
-                }
+        HttpEntityEnclosingRequestBase request = new HttpEntityEnclosingRequestBase() {
+            @Override
+            public String getMethod() {
+                return method;
             }
-            //方法处理
-            if (Objects.equals(this.httpMethod, HttpMethod.GET)){
-                //处理参数
-                if (Objects.nonNull(this.form)){
-                    if (!this.url.contains("?")){
-                        this.url+="?";
-                    }
-                    List<String> params=new ArrayList<>();
-                    for (String key : this.form.keySet()) {
-                        params.add(key+"="+this.form.get(key));
-                    }
-                    this.url+=String.join("&",params);
-                }
-            } else if (Objects.equals(this.httpMethod,HttpMethod.POST)) {
-                //目前仅判断form参数和json参数
-                if (Objects.nonNull(this.form)){
-                    //form 参数（不含file）
-                    List<NameValuePair> list = new ArrayList<>();
-                    for (String key : this.form.keySet()) {
-                        list.add(new BasicNameValuePair(key, String.valueOf(form.get(key))));
-                    }
-                    request.setEntity(new UrlEncodedFormEntity(list));
-                }else{
-                    //json body参数
-                    assert this.headers != null;
-                    String contentType = this.headers.get("Content-Type");
-                    if (Objects.isNull(contentType)||contentType.isEmpty()){
-                        this.headers.put("Content-Type", "application/json");
-                    }
-                    if (null == body){
-                        body="";
-                    }
-                    request.setEntity(new StringEntity(body));
-                }
+        };
+        //头部处理
+        if (Objects.nonNull(this.headers)){
+            for (String key : this.headers.keySet()) {
+                request.addHeader(key,this.headers.get(key));
             }
+        }
+        //方法处理
+        if (Objects.equals(this.httpMethod, HttpMethod.GET)){
+            //处理参数
+            if (Objects.nonNull(this.form)){
+                if (!this.url.contains("?")){
+                    this.url+="?";
+                }
+                List<String> params=new ArrayList<>();
+                for (String key : this.form.keySet()) {
+                    params.add(key+"="+this.form.get(key));
+                }
+                this.url+=String.join("&",params);
+            }
+        } else if (Objects.equals(this.httpMethod,HttpMethod.POST)) {
+            //目前仅判断form参数和json参数
+            if (Objects.nonNull(this.form)){
+                //form 参数（不含file）
+                List<NameValuePair> list = new ArrayList<>();
+                for (String key : this.form.keySet()) {
+                    list.add(new BasicNameValuePair(key, String.valueOf(form.get(key))));
+                }
+                request.setEntity(new UrlEncodedFormEntity(list));
+            }else{
+                //json body参数
+                assert this.headers != null;
+                String contentType = this.headers.get("Content-Type");
+                if (Objects.isNull(contentType)||contentType.isEmpty()){
+                    this.headers.put("Content-Type", "application/json");
+                }
+                if (null == body){
+                    body="";
+                }
+                request.setEntity(new StringEntity(body));
+            }
+        }
 
-            request.setURI(URI.create(this.url));
-            CloseableHttpResponse response = httpclient.execute(request);
+        request.setURI(URI.create(this.url));
+        HttpClientContext context=HttpClientContext.create();
+        context.setRequestConfig(config);
+        context.setCookieStore(this.cookieStore);
+        try(CloseableHttpResponse response = httpClient.execute(request,context)){
             return new HttpResponse(response, EntityUtils.toByteArray(response.getEntity()), cookieStore.getCookies());
         }
     }
