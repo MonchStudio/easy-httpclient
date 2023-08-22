@@ -9,7 +9,7 @@ maven 依赖
 <dependency>
     <groupId>com.monchstudio.image</groupId>
     <artifactId>easy-httpclient</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.3</version>
 </dependency>
 ````
 
