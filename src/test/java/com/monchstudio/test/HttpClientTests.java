@@ -20,6 +20,7 @@ import com.monchstudio.utils.http.HttpClientUtil;
 import com.monchstudio.utils.http.HttpResponse;
 import org.apache.http.Header;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Objects;
 
@@ -50,6 +51,35 @@ public class HttpClientTests {
         Header firstHeader = response.getFirstHeader("Content-Type");
         if (Objects.nonNull(firstHeader)){
             System.out.println("header :"+firstHeader.getValue());
+        }
+    }
+
+
+    public static void postForm() throws IOException {
+        HttpResponse response = HttpClientUtil.post("https://www.baidu.com")
+                .form("keywords", "测试")
+                .header("token", "123456")
+                .cookie("BAIDU", "11234")
+                .execute();
+        String body = response.body();
+    }
+
+    public static void postJson() throws IOException {
+        HttpResponse response = HttpClientUtil.post("https://www.baidu.com")
+                .body("{\"keywords\":\"测试\"}")
+                .header("token", "123456")
+                .cookie("BAIDU", "11234")
+                .execute();
+        String body = response.body();
+    }
+
+    public static void getFile()throws IOException {
+        HttpResponse response = HttpClientUtil.get("https://www.baidu.com")
+                .execute();
+        byte[] bytes = response.bodyBytes();
+        try (FileOutputStream fos=new FileOutputStream("d:/tmp/baidu.html")){
+            fos.write(bytes);
+            fos.flush();
         }
     }
 
