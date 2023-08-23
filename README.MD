@@ -7,7 +7,7 @@
 maven 依赖
 ````xml
 <dependency>
-    <groupId>com.monchstudio.image</groupId>
+    <groupId>com.monchstudio.utils</groupId>
     <artifactId>easy-httpclient</artifactId>
     <version>1.0.3</version>
 </dependency>
