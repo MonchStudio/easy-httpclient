@@ -9,14 +9,14 @@ maven 依赖
 <dependency>
     <groupId>com.monchstudio.utils</groupId>
     <artifactId>easy-httpclient</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
 </dependency>
 ````
 
 Java  代码
 ````java
     public static void get() throws IOException {
-        HttpResponse response = HttpClientUtil.get("http://www.baidu.com")
+        HttpResponse response = EasyHttpUtil.get("http://www.baidu.com")
                 .execute();
         String body = response.body();
         System.out.println("body:\n"+body);
@@ -30,7 +30,7 @@ Java  代码
 
 
     public static void postForm() throws IOException {
-        HttpResponse response = HttpClientUtil.post("https://www.baidu.com")
+        HttpResponse response = EasyHttpUtil.post("https://www.baidu.com")
                 .form("keywords", "测试")
                 .header("token", "123456")
                 .cookie("BAIDU", "11234")
@@ -39,7 +39,7 @@ Java  代码
     }
 
     public static void postJson() throws IOException {
-        HttpResponse response = HttpClientUtil.post("https://www.baidu.com")
+        HttpResponse response = EasyHttpUtil.post("https://www.baidu.com")
                 .body("{\"keywords\":\"测试\"}")
                 .header("token", "123456")
                 .cookie("BAIDU", "11234")
@@ -48,7 +48,7 @@ Java  代码
     }
 
     public static void getFile()throws IOException {
-        HttpResponse response = HttpClientUtil.get("https://www.baidu.com")
+        HttpResponse response = EasyHttpUtil.get("https://www.baidu.com")
                 .execute();
         byte[] bytes = response.bodyBytes();
         try (FileOutputStream fos=new FileOutputStream("d:/tmp/baidu.html")){

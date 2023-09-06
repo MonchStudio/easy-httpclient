@@ -16,13 +16,7 @@
 
 package com.monchstudio.utils.http;
 
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-
-/**
- * 弃用，使用 com.monchstudio.utils.http.EasyHttpUtil 代替
- */
-@Deprecated
-public class HttpClientUtil {
+public class EasyHttpUtil {
 
     /**
      * POST请求
