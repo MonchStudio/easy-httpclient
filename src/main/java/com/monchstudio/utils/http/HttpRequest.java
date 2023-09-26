@@ -125,6 +125,13 @@ public class HttpRequest {
         return this;
     }
 
+    public HttpRequest headerMap(Map<String,String> headers){
+        if (Objects.nonNull(headers)){
+            this.headers.putAll(headers);
+        }
+        return this;
+    }
+
 
     public HttpRequest cookie(String name,String value){
         BasicClientCookie cookie = new BasicClientCookie(name, value);

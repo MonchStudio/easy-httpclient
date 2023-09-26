@@ -4,7 +4,7 @@
 
   <groupId>com.monchstudio.utils</groupId>
   <artifactId>easy-httpclient</artifactId>
-  <version>1.0.4</version>
+  <version>1.0.5</version>
   <packaging>jar</packaging>
 
   <name>easy-httpclient</name>

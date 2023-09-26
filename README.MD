@@ -62,5 +62,11 @@ Java  代码
 
 apache httpclient 4.15.3
 
+## 更新日志
+#### 1.0.5
+- 新增header进行map批量设置
+#### 1.0.4
+- 入口更名为EasyHttpUtil
+
 ## 开源许可
 Apache License 2.0
