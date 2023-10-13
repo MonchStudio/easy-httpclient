@@ -16,12 +16,15 @@
 
 package com.monchstudio.test;
 
+import com.monchstudio.utils.http.EasyHttpUtil;
 import com.monchstudio.utils.http.HttpClientUtil;
 import com.monchstudio.utils.http.HttpResponse;
 import org.apache.http.Header;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -30,16 +33,23 @@ import java.util.Objects;
 public class HttpClientTests {
 
 
-    public static void main(String[] args) {
-        try {
-            for (int i = 0; i < 20; i++) {
-                get();
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+    public static void main(String[] args) throws IOException {
+        getRedirect();
     }
 
+
+    public static void getRedirect() throws IOException {
+        Map<String,String> headerMap=new HashMap<>();
+        headerMap.put("Cookie","123");
+        headerMap.put("referer","https://www.douyin.com/");
+        headerMap.put("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36 Edg/117.0.2045.60");
+
+        String url="https://www.douyin.com/aweme/v1/play/?video_id=v0300fg10000cjo168bc77u5m8uvemeg";
+        String s = EasyHttpUtil.get(url)
+                .headerMap(headerMap)
+                .executeRedirect();
+        System.out.println(s);
+    }
 
     public static void get() throws IOException {
         HttpResponse response = HttpClientUtil.get("http://www.baidu.com")

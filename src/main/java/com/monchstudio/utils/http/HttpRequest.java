@@ -16,6 +16,7 @@
 
 package com.monchstudio.utils.http;
 
+import org.apache.http.Header;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -111,6 +112,7 @@ public class HttpRequest {
 
 
     }
+
 
     protected static HttpRequest create(String url){
         return new HttpRequest(url);
@@ -333,5 +335,80 @@ public class HttpRequest {
         }
     }
 
+    public String executeRedirect() throws IOException {
+
+        String method=this.httpMethod.getName();
+
+        HttpEntityEnclosingRequestBase request = new HttpEntityEnclosingRequestBase() {
+            @Override
+            public String getMethod() {
+                return method;
+            }
+        };
+        //头部处理
+        if (Objects.nonNull(this.headers)){
+            for (String key : this.headers.keySet()) {
+                request.addHeader(key,this.headers.get(key));
+            }
+        }
+        //方法处理
+        if (Objects.equals(this.httpMethod, HttpMethod.GET)){
+            //处理参数
+            if (Objects.nonNull(this.form)){
+                if (!this.url.contains("?")){
+                    this.url+="?";
+                }
+                List<String> params=new ArrayList<>();
+                for (String key : this.form.keySet()) {
+                    params.add(key+"="+this.form.get(key));
+                }
+                this.url+=String.join("&",params);
+            }
+        } else if (Objects.equals(this.httpMethod,HttpMethod.POST)) {
+            //目前仅判断form参数和json参数
+            if (Objects.nonNull(this.form)){
+                //form 参数（不含file）
+                List<NameValuePair> list = new ArrayList<>();
+                for (String key : this.form.keySet()) {
+                    list.add(new BasicNameValuePair(key, String.valueOf(form.get(key))));
+                }
+                request.setEntity(new UrlEncodedFormEntity(list));
+            }else{
+                //json body参数
+                assert this.headers != null;
+                String contentType = this.headers.get("Content-Type");
+                if (Objects.isNull(contentType)||contentType.isEmpty()){
+                    this.headers.put("Content-Type", "application/json");
+                }
+                if (null == body){
+                    body="";
+                }
+                request.setEntity(new StringEntity(body));
+            }
+        }
+
+        request.setURI(URI.create(this.url));
+
+        //设置不允许重定向
+        RequestConfig config = RequestConfig.custom().setRedirectsEnabled(false).build();
+
+        HttpClientContext context=HttpClientContext.create();
+        context.setRequestConfig(config);
+        try(CloseableHttpResponse response = httpClient.execute(request,context)){
+            int code = response.getStatusLine().getStatusCode();
+            String newuri="";
+            if (code == 302||code==301) {
+                // 跳转的目标地址是在response的 HTTP-HEAD 中的，location的值
+                Header header = response.getFirstHeader("location");
+                // 这就是跳转后的地址，再向这个地址发出新申请，以便得到跳转后的信息是啥。
+                newuri = header.getValue();
+                return newuri;
+            }else{
+                return "";
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }
